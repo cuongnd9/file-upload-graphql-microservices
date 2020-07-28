@@ -3,6 +3,7 @@ import helmet from 'helmet';
 import bodyParser from 'body-parser';
 import { GraphQLSchema } from 'graphql';
 import expressPlayground from 'graphql-playground-middleware-express';
+import { graphqlUploadExpress } from 'graphql-upload';
 
 import { makeRemoteExecutableSchema, mergeSchemas } from 'graphql-tools';
 import { handleError, getSchema, relay, config } from './components';
@@ -31,7 +32,7 @@ const main = async () => {
     endpoint: '/',
     subscriptionEndpoint: '/',
   }));
-  app.post('/', graphqlController.action('index'));
+  app.post('/', graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }), graphqlController.action('index'));
   app.put('/schema', schemaController.action('update'));
 
   app.use(handleError);

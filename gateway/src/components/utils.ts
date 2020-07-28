@@ -4,11 +4,11 @@ import { get } from 'lodash';
 import { GraphQLSchema, DocumentNode, ExecutionResult } from 'graphql';
 import crypto from 'crypto';
 import {
-  AppError, ServiceError, ParserError, AuthenticationError, ResourceNotFound,
+  AppError, ServiceError, ParserError, AuthenticationError,
 } from './errors';
-
-import { config } from '.';
-
+import { serialize, deserialize } from 'surrial';
+// @ts-ignore
+import { Upload } from 'graphql-upload';
 
 type Operation = {
   query: DocumentNode;
@@ -26,7 +26,19 @@ export const relay = (url: string) => (operation: Operation) => new Promise<Exec
   const client = new server(url, credentials.createInsecure());
   const graphqlContext = get(operation, 'context.graphqlContext');
   const req = get(graphqlContext, 'req');
-  client.callRequest({ headers: JSON.stringify(req.headers), query: req.body.query }, (_: any, response: any) => {
+  try {
+    console.log(
+      serialize(req.body.variables || {}, [Upload]),
+      '----💩----serialize--',
+    )
+  } catch (error) {
+    console.log(error, '---errrrrr----')
+  }
+  client.callRequest({
+    headers: JSON.stringify(req.headers),
+    query: req.body.query,
+    variables: JSON.stringify(req.body.variables || {}),
+  }, (_: any, response: any) => {
     const error = get(response, 'error');
     if (error) {
       const parsedError = JSON.parse(error);
@@ -58,6 +70,10 @@ export const getSchema = (url: string) => new Promise<GraphQLSchema>((resolve, r
     resolve(parsedData.replace('getSchema: String', ''));
   });
 });
+
+export const wrapAsync = (fn: Function) => (req: Request, res: Response, next: NextFunction) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
 
 export const handleError = (
   err: AppError,
