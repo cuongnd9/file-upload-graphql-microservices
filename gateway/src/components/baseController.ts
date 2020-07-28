@@ -1,7 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 
-import redis from '../redis';
-import { encryptResponse } from '.';
 import { SchemaNotFoundError } from './errors';
 
 class BaseController {
@@ -14,10 +12,6 @@ class BaseController {
         }
         if (data.data && JSON.stringify(data.data) === '{}') {
           throw new SchemaNotFoundError();
-        }
-        if (res.locals.doEncryptResponse) {
-          const encryptedData = await encryptResponse(redis, data, res.locals.apiKey);
-          return res.json(encryptedData);
         }
         res.json(data);
       } catch (err) {

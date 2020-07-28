@@ -1,21 +1,16 @@
 import { app } from 'grpc-graphql-sdk';
 
 import graphql from './graphql';
-import zeebe from './zeebe';
-import sequelize from './models';
-import { config, migrateDB, updateSchemaForGateway } from './components';
-
-const pathToMigration = `${__dirname}/migrations/`;
+import { config, updateSchemaForGateway } from './components';
 
 const main = async () => {
   try {
-    await migrateDB(sequelize, pathToMigration).catch(e => console.error(e, 'migrateDB error'));
-    zeebe();
     app(config.port, graphql);
     await updateSchemaForGateway().catch(() => console.error('update schema gateway error'));
   } catch (e) {
     console.error(e, 'global error');
   }
+  console.log(`server is listening on port ${config.port}`);
 };
 
 main();

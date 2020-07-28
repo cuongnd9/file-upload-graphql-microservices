@@ -2,10 +2,11 @@ import express, { Express } from 'express';
 import helmet from 'helmet';
 import bodyParser from 'body-parser';
 import { GraphQLSchema } from 'graphql';
+import expressPlayground from 'graphql-playground-middleware-express';
+
 import { makeRemoteExecutableSchema, mergeSchemas } from 'graphql-tools';
 import { handleError, getSchema, relay, config } from './components';
 import { GraphqlController, SchemaController } from './controllers';
-import { validateApiKey } from './components';
 
 const main = async () => {
   const app: Express = express();
@@ -25,7 +26,12 @@ const main = async () => {
 
   const graphqlController = new GraphqlController();
   const schemaController = new SchemaController();
-  app.post('/', validateApiKey(), graphqlController.action('index'));
+
+  app.get('/', expressPlayground({
+    endpoint: '/',
+    subscriptionEndpoint: '/',
+  }));
+  app.post('/', graphqlController.action('index'));
   app.put('/schema', schemaController.action('update'));
 
   app.use(handleError);

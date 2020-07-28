@@ -3,7 +3,6 @@ import { server, credentials } from 'grpc-graphql-sdk';
 import { get } from 'lodash';
 import { GraphQLSchema, DocumentNode, ExecutionResult } from 'graphql';
 import crypto from 'crypto';
-import { Redis } from 'ioredis';
 import {
   AppError, ServiceError, ParserError, AuthenticationError, ResourceNotFound,
 } from './errors';
@@ -56,7 +55,6 @@ export const getSchema = (url: string) => new Promise<GraphQLSchema>((resolve, r
       return reject(new ServiceError(`${url} is not found`));
     }
     const parsedData = JSON.parse(data).getSchema || '';
-    console.log(parsedData.replace('getSchema: String', ''), '🐠');
     resolve(parsedData.replace('getSchema: String', ''));
   });
 });
@@ -116,21 +114,4 @@ export const decryptRequest = (data: any, publicKey: string, algorithm: string) 
   } catch (error) {
     throw new AuthenticationError(error.message);
   }
-};
-
-export const encryptResponse = async (redis: Redis, responseData: any, apiKey: string, algorithm = config.apiKey.algorithmEncrypt) => {
-  const apiKeyData = await redis.get(apiKey);
-  if (!apiKeyData) {
-    throw new ResourceNotFound('Invalid api key');
-  }
-  const userData = JSON.parse(apiKeyData);
-  const publicKey = get(userData, 'account.publicKey');
-  const symmetricKey = crypto.randomBytes(32).toString('hex').slice(0, 32);
-  const iv = crypto.randomBytes(16).toString('hex').slice(0, 16);
-  const encryptedData = encryptData(JSON.stringify(responseData), symmetricKey, iv, algorithm);
-  const encryptedKey = encryptKey(
-    publicKey,
-    JSON.stringify({ key: symmetricKey, iv })
-  );
-  return { encryptedData, encryptedKey };
 };
