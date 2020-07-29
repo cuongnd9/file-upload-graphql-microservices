@@ -772,9 +772,9 @@
     form-data "^3.0.0"
 
 "@types/node@*":
-  version "14.0.26"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.0.26.tgz#22a3b8a46510da8944b67bfc27df02c34a35331c"
-  integrity sha512-W+fpe5s91FBGE0pEa0lnqGLL4USgpLgs4nokw16SrBBco/gQxuua7KnArSEOd5iaMqbbSHV10vUDkJYJJqpXKA==
+  version "14.0.27"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.0.27.tgz#a151873af5a5e851b51b3b065c9e63390a9e0eb1"
+  integrity sha512-kVrqXhbclHNHGu9ztnAwSncIgJv/FaxmzXJvGXNdcCpV1b8u1/Mi6z6m0vwy0LzKeXFTPLH0NzwmoJ3fNCIq0g==
 
 "@types/node@^10.1.0":
   version "10.17.28"
@@ -3339,9 +3339,9 @@ growl@1.10.5:
   integrity sha512-qBr4OuELkhPenW6goKVXiv47US3clb3/IbuWF9KNKEijAy9oeHxU9IgzjvJhHkUzhaj7rOUD7+YGWqUjLp5oSA==
 
 grpc-graphql-sdk@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/grpc-graphql-sdk/-/grpc-graphql-sdk-0.1.0.tgz#62e875b908b14e14a3393ddb231265ac621c8230"
-  integrity sha512-ELlN/Fn+SyWjGVvDqlOA2FrpVBQRHWr3VqpK0uWl2kMfYq9yBBTNzrbHBpwv/WcyK+joibQZX2Xb5OnB2GFn0g==
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/grpc-graphql-sdk/-/grpc-graphql-sdk-0.1.1.tgz#c6b926a953ebbc6431d3a88d78cf4d6475ee2bbb"
+  integrity sha512-eBrcigOWBwd6IolDZPyg12rqszYD2+PbWAVElvI5yJ38pSS9WDHFPqz6fnMtnoXdxoyesGHNQbyhPDzMJOas1w==
   dependencies:
     "@grpc/proto-loader" "^0.5.4"
     grpc "^1.24.2"

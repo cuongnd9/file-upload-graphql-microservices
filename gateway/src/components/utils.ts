@@ -3,12 +3,11 @@ import { server, credentials } from 'grpc-graphql-sdk';
 import { get } from 'lodash';
 import { GraphQLSchema, DocumentNode, ExecutionResult } from 'graphql';
 import crypto from 'crypto';
+import { ReadStream } from 'fs';
+
 import {
   AppError, ServiceError, ParserError, AuthenticationError,
 } from './errors';
-import { serialize, deserialize } from 'surrial';
-// @ts-ignore
-import { Upload } from 'graphql-upload';
 
 type Operation = {
   query: DocumentNode;
@@ -22,22 +21,31 @@ type Operation = {
   };
 }
 
-export const relay = (url: string) => (operation: Operation) => new Promise<ExecutionResult>((resolve, reject) => {
+const streamToString = (stream: ReadStream): Promise<any[]> => {
+  const chunks: any[] = []
+  return new Promise((resolve, reject) => {
+    stream.on('data', chunk => chunks.push(chunk))
+    stream.on('error', reject)
+    stream.on('end', () => resolve(chunks))
+  })
+};
+
+export const relay = (url: string) => (operation: Operation) => new Promise<ExecutionResult>(async (resolve, reject) => {
   const client = new server(url, credentials.createInsecure());
   const graphqlContext = get(operation, 'context.graphqlContext');
   const req = get(graphqlContext, 'req');
-  try {
-    console.log(
-      serialize(req.body.variables || {}, [Upload]),
-      '----💩----serialize--',
-    )
-  } catch (error) {
-    console.log(error, '---errrrrr----')
+
+  let data: any[] = [];
+  if (req.body.variables) {
+    const stream = req.body.variables.file.file.createReadStream();
+    data = await streamToString(stream);
   }
+
   client.callRequest({
     headers: JSON.stringify(req.headers),
     query: req.body.query,
-    variables: JSON.stringify(req.body.variables || {}),
+    variables: data,
+    variables2: data,
   }, (_: any, response: any) => {
     const error = get(response, 'error');
     if (error) {

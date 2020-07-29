@@ -6,7 +6,7 @@ import { config, updateSchemaForGateway } from './components';
 const main = async () => {
   try {
     app(config.port, graphql);
-    await updateSchemaForGateway().catch(() => console.error('update schema gateway error'));
+    // await updateSchemaForGateway().catch(() => console.error('update schema gateway error'));
   } catch (e) {
     console.error(e, 'global error');
   }
