@@ -30,16 +30,23 @@ const streamToString = (stream: ReadStream): Promise<any[]> => {
   })
 };
 
+const formatVariables = (variables: any) => {
+  return variables.values.map(async (variable: any) => ({
+    ...variable,
+    createReadStream: Buffer.concat(await streamToString(variable.file.createReadStream()))
+   }));
+}
+
 export const relay = (url: string) => (operation: Operation) => new Promise<ExecutionResult>(async (resolve, reject) => {
   const client = new server(url, credentials.createInsecure());
   const graphqlContext = get(operation, 'context.graphqlContext');
   const req = get(graphqlContext, 'req');
 
   let data: any[] = [];
-  console.log(req.body, '---req.body-----')
   if (req.body.variables && req.body.variables.file) {
     const stream = req.body.variables.file.file.createReadStream();
     data = await streamToString(stream);
+    // console.log(await formatVariables(req.body.variables), '---tada------')
   }
 
   client.callRequest({
