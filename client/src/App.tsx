@@ -18,6 +18,15 @@ const UPLOAD_FILE = gql`
     }
   }
 `;
+const MULTIPLE_UPLOAD_FILE = gql`
+  mutation multipleUpload($files: [Upload!]!) {
+    multipleUpload(files: $files) {
+      filename
+      mimetype
+      encoding
+    }
+  }
+`;
 
 function App() {
   return (
@@ -31,6 +40,22 @@ function App() {
               onChange={({ target: { validity, files: [file] } }: any) => {
                 if (validity.valid) {
                   singleUpload({ variables: { file } });
+                }
+              }}
+            />
+          )
+        }
+      </Mutation>
+      <Mutation mutation={MULTIPLE_UPLOAD_FILE}>
+        {
+          (multipleUpload: any) => (
+            <input
+              type="file"
+              multiple
+              required
+              onChange={({ target: { validity, files } }: any) => {
+                if (validity.valid) {
+                  multipleUpload({ variables: { files } });
                 }
               }}
             />

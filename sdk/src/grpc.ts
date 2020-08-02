@@ -22,7 +22,10 @@ const callRequest = (graphql: any) => (call: any, callback: Function) => {
 }
 
 export const app = (port: number | string, graphql: any): void => {
-  const server = new grpc.Server();
+  const server = new grpc.Server({
+    'grpc.max_receive_message_length': 1024 * 1024 * 100,
+    'grpc.max_send_message_length': 1024 * 1024 * 100,
+  });
   server.addService(serverProto.Server.service, { callRequest: callRequest(graphql) });
   server.bind(`0.0.0.0:${port}`, grpc.ServerCredentials.createInsecure());
   server.start();

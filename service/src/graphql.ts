@@ -8,7 +8,7 @@ import { handleResponse, handleError } from './components';
 const formatVariables = (variables: any[]) => {
   return variables.length === 0 ? {} : variables.reduce((obj, variable) => ({
     ...obj,
-    [variable.key]: variable.file,
+    [variable.key]: variable.value,
   }), {});
 };
 

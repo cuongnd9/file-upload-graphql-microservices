@@ -33,15 +33,21 @@ const streamToString = (stream: ReadStream): Promise<any[]> => {
 const formatVariables = (variables: any) => {
   return !variables ? {} :  Promise.all(Object.keys(variables).map(async (key: any) => ({
     key,
-    file: {
+    value: !Array.isArray(variables[key]) ? {
       ...variables[key].file,
-      createReadStream: Buffer.concat(await streamToString(variables[key].file.createReadStream())),
-    }
+      createReadStream: variables[key].file && Buffer.concat(await streamToString(variables[key].file.createReadStream())),
+    } : await Promise.all(variables[key].map(async (item: any) => ({
+      ...(await item.promise),
+      createReadStream: (await item.promise) && Buffer.concat(await streamToString((await item.promise).createReadStream())),
+    }))),
   })));
 }
 
 export const relay = (url: string) => (operation: Operation) => new Promise<ExecutionResult>(async (resolve, reject) => {
-  const client = new server(url, credentials.createInsecure());
+  const client = new server(url, credentials.createInsecure(), {
+    'grpc.max_receive_message_length': 1024 * 1024 * 100,
+    'grpc.max_send_message_length': 1024 * 1024 * 100,
+  });
   const graphqlContext = get(operation, 'context.graphqlContext');
   const req = get(graphqlContext, 'req');
   client.callRequest({

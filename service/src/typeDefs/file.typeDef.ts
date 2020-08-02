@@ -10,6 +10,7 @@ const typeDef = `
   }
   type Mutation {
     singleUpload(file: Upload!): File!
+    multipleUpload(files: [Upload!]!): [File!]
   }
 `;
 
