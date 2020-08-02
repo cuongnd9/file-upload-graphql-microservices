@@ -1,6 +1,5 @@
 import { graphql, buildSchema } from 'graphql';
 import { mergeTypes } from 'merge-graphql-schemas';
-import { createWriteStream, writeFileSync } from 'fs';
 import { diana } from 'diana-js';
 // @ts-ignore
 import { Upload } from 'graphql-upload';
@@ -12,26 +11,20 @@ import { handleResponse, handleError } from './components';
 const schema = buildSchema(mergeTypes(typeDefs));
 
 const callGraphql = async (req: any, callback: Function) => {
-  // console.log(req.variables, '-------req.variables-------')
-  // console.log(req.variables2, '-------req.variables2-------')
   if (req.variables) {
-    writeFileSync(`${__dirname}/../public/${diana()}.png`, req.variables,
-      // { encoding: 'utf8' },
-    );
+    console.log(Buffer.from(req.variables), '-------req.variables-------')
+
   }
 
   const file = {
-    file: {
-      filename: 'Screenshot from 2020-07-29 13-54-38.png',
-      mimetype: 'image/png',
-      encoding: '7bit',
-      createReadStream: () => Buffer.from(req.variables),
-    }
-  } as Upload;
+    filename: 'Screenshot from 2020-07-29 13-54-38.png',
+    mimetype: 'image/png',
+    encoding: '7bit',
+    createReadStream: Buffer.from(req.variables),
+  };
   const variables = { file }
-
-  console.log(variables, '-----------variables-------')
-
+  console.log(req.query, '----req.query-----')
+  console.log(variables, '---variables---')
   try {
     const result = await graphql(schema, req.query, resolvers, {}, variables);
     console.log(result, '------result')

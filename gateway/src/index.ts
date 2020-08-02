@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import { GraphQLSchema } from 'graphql';
 import expressPlayground from 'graphql-playground-middleware-express';
 import { graphqlUploadExpress } from 'graphql-upload';
+import cors from 'cors';
 
 import { makeRemoteExecutableSchema, mergeSchemas } from 'graphql-tools';
 import { handleError, getSchema, relay, config } from './components';
@@ -13,6 +14,7 @@ const main = async () => {
   const app: Express = express();
 
   app.use(helmet());
+  app.use(cors());
   app.use(bodyParser.json({ limit: '50mb' }));
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));

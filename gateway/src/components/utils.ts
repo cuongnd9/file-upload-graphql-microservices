@@ -36,7 +36,8 @@ export const relay = (url: string) => (operation: Operation) => new Promise<Exec
   const req = get(graphqlContext, 'req');
 
   let data: any[] = [];
-  if (req.body.variables) {
+  console.log(req.body, '---req.body-----')
+  if (req.body.variables && req.body.variables.file) {
     const stream = req.body.variables.file.file.createReadStream();
     data = await streamToString(stream);
   }
@@ -44,8 +45,7 @@ export const relay = (url: string) => (operation: Operation) => new Promise<Exec
   client.callRequest({
     headers: JSON.stringify(req.headers),
     query: req.body.query,
-    variables: data,
-    variables2: data,
+    variables: Buffer.concat(data),
   }, (_: any, response: any) => {
     const error = get(response, 'error');
     if (error) {
