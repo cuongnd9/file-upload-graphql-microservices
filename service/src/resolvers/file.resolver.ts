@@ -11,9 +11,9 @@ const resolver = {
     singleUpload: async (_: any, { file }: { file: any }) => {
       const { createReadStream, filename, mimetype, encoding } = file;
       const stream = createReadStream();
-      // console.log(stream);
-      const path = `uploads/${diana()}${filename}`;
-      writeFileSync(path, stream);
+      console.log(stream);
+      const path = `uploads/${new Date().getTime()}${filename}`;
+      writeFileSync(path, stream, { encoding: 'utf8' });
 
       return { filename, mimetype, encoding };
     }

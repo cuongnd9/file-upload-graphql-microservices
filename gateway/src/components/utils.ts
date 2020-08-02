@@ -3,7 +3,7 @@ import { server, credentials } from 'grpc-graphql-sdk';
 import { get } from 'lodash';
 import { GraphQLSchema, DocumentNode, ExecutionResult } from 'graphql';
 import crypto from 'crypto';
-import { ReadStream } from 'fs';
+import { ReadStream, writeFileSync } from 'fs';
 
 import {
   AppError, ServiceError, ParserError, AuthenticationError,
@@ -46,13 +46,12 @@ export const relay = (url: string) => (operation: Operation) => new Promise<Exec
   if (req.body.variables && req.body.variables.file) {
     const stream = req.body.variables.file.file.createReadStream();
     data = await streamToString(stream);
-    // console.log(await formatVariables(req.body.variables), '---tada------')
   }
 
   client.callRequest({
     headers: JSON.stringify(req.headers),
     query: req.body.query,
-    variables: Buffer.concat(data),
+    variables: JSON.stringify(Buffer.concat(data)),
   }, (_: any, response: any) => {
     const error = get(response, 'error');
     if (error) {
