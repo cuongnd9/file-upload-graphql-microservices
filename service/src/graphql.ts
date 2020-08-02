@@ -5,17 +5,17 @@ import typeDefs from './typeDefs';
 import resolvers from './resolvers';
 import { handleResponse, handleError } from './components';
 
+const formatVariables = (variables: any[]) => {
+  return variables.length === 0 ? {} : variables.reduce((obj, variable) => ({
+    ...obj,
+    [variable.key]: variable.file,
+  }), {});
+};
+
 const callGraphql = async (req: any, callback: Function) => {
-  const file = {
-    filename: 'Screenshot from 2020-07-29 13-54-38.png',
-    mimetype: 'image/png',
-    encoding: '7bit',
-    createReadStream: () => Buffer.from(JSON.parse(req.variables)),
-  };
-  const variables = { file }
   try {
     const schema = makeExecutableSchema({ typeDefs, resolvers });
-    const result = await graphql(schema, req.query, resolvers, {}, variables);
+    const result = await graphql(schema, req.query, resolvers, {}, formatVariables(JSON.parse(req.variables  || '[]')));
     if (result.errors) {
       return handleError(null, result.errors[0], callback);
     }

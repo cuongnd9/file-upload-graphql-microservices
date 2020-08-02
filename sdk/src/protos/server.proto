@@ -15,7 +15,6 @@ message Request {
   string query = 1;
   string variables = 2;
   string headers = 3;
-  string variables2 = 4;
 }
 
 message Reply {
